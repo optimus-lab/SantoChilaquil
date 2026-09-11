@@ -1,0 +1,1438 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Menú Digital | Restaurante</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Configuración personalizada de Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        restaurant: {
+                            dark: '#17130F',
+                            brown: '#3A2920',
+                            gold: '#C89B3C',
+                            cream: '#F8F3EA',
+                            red: '#8F2D25'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #F8F3EA;
+        }
+
+        /* Ocultar scrollbar pero mantener scroll */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Animación del carrito */
+        .cart-bounce {
+            animation: cartBounce 0.3s ease;
+        }
+
+        @keyframes cartBounce {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Overlay */
+        .overlay {
+            transition: opacity 0.3s ease;
+        }
+
+        /* Panel carrito */
+        .cart-panel {
+            transition: transform 0.3s ease;
+        }
+
+        /* Cuando el carrito está cerrado */
+        .cart-closed {
+            transform: translateX(100%);
+        }
+
+        /* Cuando el carrito está abierto */
+        .cart-open {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+
+<body class="text-stone-800">
+
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+    <header class="bg-restaurant-dark text-white sticky top-0 z-40 shadow-lg">
+
+        <div class="max-w-6xl mx-auto px-4 py-4">
+
+            <div class="flex items-center justify-between">
+
+                <!-- Logo / Restaurante -->
+                <div>
+                    <p class="text-restaurant-gold text-xs uppercase tracking-[0.25em]">
+                        Menú Digital
+                    </p>
+
+                    <h1 id="restaurantNameHeader"
+                        class="text-xl sm:text-2xl font-bold">
+                        La Casa del Sabor
+                    </h1>
+                </div>
+
+                <!-- Botón carrito -->
+                <button
+                    id="openCartButton"
+                    onclick="openCart()"
+                    class="relative bg-restaurant-gold text-restaurant-dark rounded-full p-3 shadow-lg hover:scale-105 transition"
+                    aria-label="Abrir carrito">
+
+                    <!-- Icono carrito -->
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-6 h-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2">
+
+                        <path stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 2h13M9 19a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2z"/>
+                    </svg>
+
+                    <!-- Contador -->
+                    <span
+                        id="cartCount"
+                        class="absolute -top-1 -right-1 bg-restaurant-red text-white text-xs font-bold rounded-full min-w-[22px] h-[22px] flex items-center justify-center">
+                        0
+                    </span>
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         HERO
+    ========================================================== -->
+    <section class="bg-restaurant-dark text-white">
+
+        <div class="max-w-6xl mx-auto px-4 py-10 sm:py-16">
+
+            <div class="max-w-2xl">
+
+                <p class="text-restaurant-gold uppercase tracking-[0.3em] text-sm mb-3">
+                    Sabor • Calidad • Tradición
+                </p>
+
+                <h2 class="text-4xl sm:text-6xl font-bold leading-tight mb-5">
+                    Nuestro Menú
+                </h2>
+
+                <p class="text-stone-300 text-lg">
+                    Elige tus platillos favoritos y realiza tu pedido
+                    directamente por WhatsApp.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         CATEGORÍAS
+    ========================================================== -->
+
+    <nav class="sticky top-[73px] z-30 bg-white border-b shadow-sm">
+
+        <div class="max-w-6xl mx-auto px-4">
+
+            <div
+                id="categoryMenu"
+                class="flex gap-3 overflow-x-auto hide-scrollbar py-3">
+
+                <!-- Las categorías se generan automáticamente -->
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================================================
+         CATÁLOGO
+    ========================================================== -->
+
+    <main class="max-w-6xl mx-auto px-4 py-8 pb-32">
+
+        <div id="productsContainer" class="space-y-10">
+
+            <!-- Los productos se generan mediante JavaScript -->
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================================
+         BOTÓN FLOTANTE DEL CARRITO
+    ========================================================== -->
+
+    <button
+        onclick="openCart()"
+        class="fixed bottom-5 right-5 z-30 bg-restaurant-dark text-white px-5 py-4 rounded-full shadow-2xl flex items-center gap-3 hover:bg-restaurant-brown transition">
+
+        <svg xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6 text-restaurant-gold"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2">
+
+            <path stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 2h13M9 19a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2z"/>
+
+        </svg>
+
+        <span>
+            Ver pedido
+        </span>
+
+        <span id="floatingCartTotal"
+            class="font-bold">
+            $0
+        </span>
+
+    </button>
+
+
+    <!-- =========================================================
+         OVERLAY
+    ========================================================== -->
+
+    <div
+        id="cartOverlay"
+        onclick="closeCart()"
+        class="overlay fixed inset-0 bg-black/50 z-40 hidden opacity-0">
+    </div>
+
+
+    <!-- =========================================================
+         CARRITO LATERAL
+    ========================================================== -->
+
+    <aside
+        id="cartPanel"
+        class="cart-panel cart-closed fixed top-0 right-0 w-full sm:max-w-md h-full bg-white z-50 shadow-2xl flex flex-col">
+
+        <!-- Header carrito -->
+
+        <div class="bg-restaurant-dark text-white px-5 py-5 flex items-center justify-between">
+
+            <div>
+
+                <p class="text-restaurant-gold text-xs uppercase tracking-widest">
+                    Tu pedido
+                </p>
+
+                <h2 class="text-xl font-bold">
+                    Carrito
+                </h2>
+
+            </div>
+
+            <button
+                onclick="closeCart()"
+                class="text-2xl hover:text-restaurant-gold transition">
+
+                ✕
+
+            </button>
+
+        </div>
+
+
+        <!-- Productos del carrito -->
+
+        <div
+            id="cartItems"
+            class="flex-1 overflow-y-auto p-5 space-y-4">
+
+            <!-- Carrito generado por JS -->
+
+        </div>
+
+
+        <!-- Footer carrito -->
+
+        <div class="border-t bg-stone-50 p-5">
+
+            <div class="flex justify-between items-center mb-5">
+
+                <span class="text-lg font-semibold">
+                    Total
+                </span>
+
+                <span
+                    id="cartTotal"
+                    class="text-2xl font-bold text-restaurant-red">
+                    $0
+                </span>
+
+            </div>
+
+            <button
+                onclick="showCheckout()"
+                id="checkoutButton"
+                class="w-full bg-restaurant-gold text-restaurant-dark font-bold py-4 rounded-xl hover:brightness-95 transition disabled:opacity-50">
+
+                Continuar con el pedido
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================================================
+         MODAL CHECKOUT
+    ========================================================== -->
+
+    <div
+        id="checkoutModal"
+        class="hidden fixed inset-0 z-[60] bg-black/60 p-4 flex items-center justify-center">
+
+        <div
+            class="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+
+            <!-- Header -->
+
+            <div class="bg-restaurant-dark text-white p-5 flex items-center justify-between">
+
+                <div>
+
+                    <p class="text-restaurant-gold text-xs uppercase tracking-widest">
+                        Finalizar
+                    </p>
+
+                    <h2 class="text-xl font-bold">
+                        Datos del pedido
+                    </h2>
+
+                </div>
+
+                <button
+                    onclick="closeCheckout()"
+                    class="text-2xl">
+
+                    ✕
+
+                </button>
+
+            </div>
+
+
+            <!-- Formulario -->
+
+            <form
+                id="checkoutForm"
+                onsubmit="confirmOrder(event)"
+                class="p-5 space-y-5">
+
+                <!-- Nombre -->
+
+                <div>
+
+                    <label
+                        for="customerName"
+                        class="block font-semibold mb-2">
+
+                        Nombre *
+
+                    </label>
+
+                    <input
+                        id="customerName"
+                        type="text"
+                        required
+                        placeholder="Ej. Juan Pérez"
+                        class="w-full border border-stone-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-restaurant-gold">
+
+                </div>
+
+
+                <!-- Tipo de entrega -->
+
+                <div>
+
+                    <label
+                        class="block font-semibold mb-2">
+
+                        Tipo de entrega *
+
+                    </label>
+
+                    <div class="grid grid-cols-2 gap-3">
+
+                        <label
+                            class="border rounded-xl p-4 cursor-pointer hover:border-restaurant-gold">
+
+                            <input
+                                type="radio"
+                                name="deliveryType"
+                                value="Domicilio"
+                                onchange="toggleAddress()"
+                                required
+                                class="mr-2">
+
+                            🛵 Domicilio
+
+                        </label>
+
+
+                        <label
+                            class="border rounded-xl p-4 cursor-pointer hover:border-restaurant-gold">
+
+                            <input
+                                type="radio"
+                                name="deliveryType"
+                                value="Retirar"
+                                onchange="toggleAddress()"
+                                required
+                                class="mr-2">
+
+                            🏪 Retirar
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Dirección -->
+
+                <div id="addressContainer" class="hidden">
+
+                    <label
+                        for="customerAddress"
+                        class="block font-semibold mb-2">
+
+                        Dirección *
+
+                    </label>
+
+                    <textarea
+                        id="customerAddress"
+                        rows="3"
+                        placeholder="Calle, número, colonia, referencias..."
+                        class="w-full border border-stone-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-restaurant-gold"></textarea>
+
+                </div>
+
+
+                <!-- Resumen -->
+
+                <div class="bg-stone-100 rounded-xl p-4">
+
+                    <div class="flex justify-between">
+
+                        <span class="font-semibold">
+                            Total del pedido
+                        </span>
+
+                        <span
+                            id="checkoutTotal"
+                            class="font-bold text-restaurant-red">
+                            $0
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Botón WhatsApp -->
+
+                <button
+                    type="submit"
+                    class="w-full bg-[#25D366] text-white font-bold py-4 rounded-xl hover:brightness-95 transition flex items-center justify-center gap-3">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-6 h-6"
+                        viewBox="0 0 24 24"
+                        fill="currentColor">
+
+                        <path d="M20.52 3.48A11.82 11.82 0 0012.04 0C5.52 0 .22 5.3.22 11.82c0 2.08.54 4.11 1.57 5.9L.11 24l6.43-1.68a11.8 11.8 0 005.5 1.4h.01c6.52 0 11.82-5.3 11.82-11.82 0-3.16-1.23-6.13-3.35-8.42zM12.05 21.7h-.01a9.85 9.85 0 01-5.02-1.37l-.36-.21-3.81 1 1.02-3.71-.23-.38a9.86 9.86 0 01-1.51-5.21C2.13 6.38 6.58 1.93 12.06 1.93a9.85 9.85 0 017 2.9 9.84 9.84 0 012.9 7c-.01 5.48-4.46 9.93-9.91 9.93zm5.44-7.43c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.28-.47-2.44-1.5-.9-.8-1.51-1.78-1.69-2.08-.18-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51-.17-.01-.37-.01-.57-.01-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5s1.07 2.9 1.22 3.1c.15.2 2.1 3.21 5.08 4.5.71.31 1.27.49 1.7.63.71.23 1.36.2 1.87.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z"/>
+
+                    </svg>
+
+                    Confirmar Pedido por WhatsApp
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+    <script>
+
+        /* ========================================================
+           CONFIGURACIÓN PRINCIPAL
+        ========================================================= */
+
+        // ========================================================
+        // CAMBIA AQUÍ EL NOMBRE DE TU RESTAURANTE
+        // ========================================================
+
+        const RESTAURANT_NAME = "La Casa del Sabor";
+
+
+        // ========================================================
+        // CAMBIA AQUÍ TU NÚMERO DE WHATSAPP
+        //
+        // IMPORTANTE:
+        // Escribe el número con código de país.
+        //
+        // México = 52
+        //
+        // Ejemplo:
+        // const WHATSAPP_NUMBER = "525512345678";
+        //
+        // NO pongas +, espacios ni guiones.
+        // ========================================================
+
+        const WHATSAPP_NUMBER = "52";
+
+
+        /* ========================================================
+           CATÁLOGO DE PRODUCTOS
+
+           Solo necesitas modificar este array para cambiar
+           nombres, precios, descripciones y categorías.
+        ========================================================= */
+
+        const products = [
+
+            {
+                id: 1,
+                name: "Guacamole de la Casa",
+                description: "Aguacate fresco, jitomate, cebolla, cilantro y limón.",
+                price: 120,
+                category: "Entradas",
+                emoji: "🥑"
+            },
+
+            {
+                id: 2,
+                name: "Tacos de Arrachera",
+                description: "Suave arrachera acompañada de cebolla, cilantro y salsa.",
+                price: 180,
+                category: "Platos Fuertes",
+                emoji: "🌮"
+            },
+
+            {
+                id: 3,
+                name: "Hamburguesa Especial",
+                description: "Carne de res, queso, vegetales frescos y papas.",
+                price: 195,
+                category: "Platos Fuertes",
+                emoji: "🍔"
+            },
+
+            {
+                id: 4,
+                name: "Agua de Jamaica",
+                description: "Agua fresca de jamaica preparada en casa.",
+                price: 45,
+                category: "Bebidas",
+                emoji: "🥤"
+            },
+
+            {
+                id: 5,
+                name: "Pastel de Chocolate",
+                description: "Pastel de chocolate con ganache y frutos rojos.",
+                price: 95,
+                category: "Postres",
+                emoji: "🍰"
+            }
+
+        ];
+
+
+        /* ========================================================
+           ESTADO LOCAL
+        ========================================================= */
+
+        let cart = [];
+
+
+        /* ========================================================
+           FORMATEAR MONEDA
+        ========================================================= */
+
+        function formatPrice(price) {
+
+            return new Intl.NumberFormat("es-MX", {
+                style: "currency",
+                currency: "MXN"
+            }).format(price);
+
+        }
+
+
+        /* ========================================================
+           OBTENER CATEGORÍAS
+        ========================================================= */
+
+        function getCategories() {
+
+            return [...new Set(products.map(product => product.category))];
+
+        }
+
+
+        /* ========================================================
+           RENDERIZAR CATEGORÍAS
+        ========================================================= */
+
+        function renderCategories() {
+
+            const categoryMenu =
+                document.getElementById("categoryMenu");
+
+            const categories = getCategories();
+
+            categoryMenu.innerHTML = categories.map((category, index) => {
+
+                return `
+                    <button
+                        onclick="scrollToCategory('${category}')"
+                        class="
+                            whitespace-nowrap
+                            px-5
+                            py-2
+                            rounded-full
+                            text-sm
+                            font-semibold
+                            transition
+                            ${index === 0
+                                ? "bg-restaurant-dark text-white"
+                                : "bg-stone-100 text-stone-700 hover:bg-stone-200"}
+                        ">
+
+                        ${category}
+
+                    </button>
+                `;
+
+            }).join("");
+
+        }
+
+
+        /* ========================================================
+           RENDERIZAR PRODUCTOS
+        ========================================================= */
+
+        function renderProducts() {
+
+            const container =
+                document.getElementById("productsContainer");
+
+            const categories = getCategories();
+
+            container.innerHTML = categories.map(category => {
+
+                const categoryProducts =
+                    products.filter(
+                        product => product.category === category
+                    );
+
+                return `
+
+                    <section id="category-${category}">
+
+                        <div class="flex items-center gap-3 mb-5">
+
+                            <div class="w-1 h-7 bg-restaurant-gold rounded-full"></div>
+
+                            <h2 class="text-2xl sm:text-3xl font-bold">
+                                ${category}
+                            </h2>
+
+                        </div>
+
+
+                        <div class="grid sm:grid-cols-2 gap-4">
+
+                            ${categoryProducts.map(product => `
+
+                                <article
+                                    class="
+                                        bg-white
+                                        rounded-2xl
+                                        p-5
+                                        shadow-sm
+                                        border
+                                        border-stone-100
+                                        hover:shadow-lg
+                                        transition
+                                        flex
+                                        flex-col
+                                        justify-between
+                                    ">
+
+                                    <div>
+
+                                        <div class="flex gap-4">
+
+                                            <div
+                                                class="
+                                                    w-16
+                                                    h-16
+                                                    rounded-2xl
+                                                    bg-restaurant-cream
+                                                    flex
+                                                    items-center
+                                                    justify-center
+                                                    text-3xl
+                                                    shrink-0
+                                                ">
+
+                                                ${product.emoji}
+
+                                            </div>
+
+                                            <div>
+
+                                                <h3 class="font-bold text-lg">
+                                                    ${product.name}
+                                                </h3>
+
+                                                <p class="text-stone-500 text-sm mt-1">
+                                                    ${product.description}
+                                                </p>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="
+                                            flex
+                                            items-center
+                                            justify-between
+                                            gap-3
+                                            mt-6
+                                        ">
+
+                                        <span
+                                            class="
+                                                text-xl
+                                                font-bold
+                                                text-restaurant-red
+                                            ">
+
+                                            ${formatPrice(product.price)}
+
+                                        </span>
+
+
+                                        <button
+                                            onclick="addToCart(${product.id})"
+                                            class="
+                                                bg-restaurant-dark
+                                                text-white
+                                                px-4
+                                                py-3
+                                                rounded-xl
+                                                text-sm
+                                                font-semibold
+                                                hover:bg-restaurant-brown
+                                                transition
+                                            ">
+
+                                            + Agregar
+
+                                        </button>
+
+                                    </div>
+
+                                </article>
+
+                            `).join("")}
+
+                        </div>
+
+                    </section>
+
+                `;
+
+            }).join("");
+
+        }
+
+
+        /* ========================================================
+           SCROLL A CATEGORÍA
+        ========================================================= */
+
+        function scrollToCategory(category) {
+
+            const element =
+                document.getElementById(`category-${category}`);
+
+            if (element) {
+
+                element.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }
+
+        }
+
+
+        /* ========================================================
+           AGREGAR AL CARRITO
+        ========================================================= */
+
+        function addToCart(productId) {
+
+            const product =
+                products.find(product => product.id === productId);
+
+            if (!product) return;
+
+            const existingProduct =
+                cart.find(item => item.id === productId);
+
+            if (existingProduct) {
+
+                existingProduct.quantity++;
+
+            } else {
+
+                cart.push({
+                    ...product,
+                    quantity: 1
+                });
+
+            }
+
+            updateCart();
+
+            // Animación del contador
+
+            const cartCount =
+                document.getElementById("cartCount");
+
+            cartCount.classList.remove("cart-bounce");
+
+            void cartCount.offsetWidth;
+
+            cartCount.classList.add("cart-bounce");
+
+        }
+
+
+        /* ========================================================
+           CAMBIAR CANTIDAD
+        ========================================================= */
+
+        function changeQuantity(productId, change) {
+
+            const item =
+                cart.find(product => product.id === productId);
+
+            if (!item) return;
+
+            item.quantity += change;
+
+            if (item.quantity <= 0) {
+
+                cart =
+                    cart.filter(product => product.id !== productId);
+
+            }
+
+            updateCart();
+
+        }
+
+
+        /* ========================================================
+           ELIMINAR PRODUCTO
+        ========================================================= */
+
+        function removeFromCart(productId) {
+
+            cart =
+                cart.filter(product => product.id !== productId);
+
+            updateCart();
+
+        }
+
+
+        /* ========================================================
+           TOTAL DE PRODUCTOS
+        ========================================================= */
+
+        function getCartItemsCount() {
+
+            return cart.reduce(
+                (total, item) => total + item.quantity,
+                0
+            );
+
+        }
+
+
+        /* ========================================================
+           TOTAL DEL CARRITO
+        ========================================================= */
+
+        function getCartTotal() {
+
+            return cart.reduce(
+                (total, item) =>
+                    total + (item.price * item.quantity),
+                0
+            );
+
+        }
+
+
+        /* ========================================================
+           ACTUALIZAR CARRITO
+        ========================================================= */
+
+        function updateCart() {
+
+            const cartItems =
+                document.getElementById("cartItems");
+
+            const total =
+                getCartTotal();
+
+            const itemCount =
+                getCartItemsCount();
+
+
+            // Contador
+
+            document.getElementById("cartCount").textContent =
+                itemCount;
+
+
+            // Totales
+
+            document.getElementById("cartTotal").textContent =
+                formatPrice(total);
+
+            document.getElementById("floatingCartTotal").textContent =
+                formatPrice(total);
+
+            document.getElementById("checkoutTotal").textContent =
+                formatPrice(total);
+
+
+            // Carrito vacío
+
+            if (cart.length === 0) {
+
+                cartItems.innerHTML = `
+
+                    <div class="text-center py-16">
+
+                        <div class="text-5xl mb-4">
+                            🛒
+                        </div>
+
+                        <h3 class="font-bold text-xl mb-2">
+                            Tu carrito está vacío
+                        </h3>
+
+                        <p class="text-stone-500">
+                            Agrega algunos productos para comenzar tu pedido.
+                        </p>
+
+                    </div>
+
+                `;
+
+                document.getElementById("checkoutButton").disabled = true;
+
+                return;
+
+            }
+
+
+            document.getElementById("checkoutButton").disabled = false;
+
+
+            // Renderizar productos
+
+            cartItems.innerHTML = cart.map(item => {
+
+                const subtotal =
+                    item.price * item.quantity;
+
+                return `
+
+                    <div class="border-b pb-4">
+
+                        <div class="flex justify-between gap-3">
+
+                            <div class="flex-1">
+
+                                <h4 class="font-bold">
+                                    ${item.name}
+                                </h4>
+
+                                <p class="text-sm text-stone-500 mt-1">
+                                    ${formatPrice(item.price)} c/u
+                                </p>
+
+                            </div>
+
+                            <button
+                                onclick="removeFromCart(${item.id})"
+                                class="text-stone-400 hover:text-red-600">
+
+                                ✕
+
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                flex
+                                items-center
+                                justify-between
+                                mt-3
+                            ">
+
+                            <div
+                                class="
+                                    flex
+                                    items-center
+                                    border
+                                    rounded-lg
+                                    overflow-hidden
+                                ">
+
+                                <button
+                                    onclick="changeQuantity(${item.id}, -1)"
+                                    class="px-3 py-2 hover:bg-stone-100">
+
+                                    −
+
+                                </button>
+
+                                <span
+                                    class="px-4 font-semibold">
+
+                                    ${item.quantity}
+
+                                </span>
+
+                                <button
+                                    onclick="changeQuantity(${item.id}, 1)"
+                                    class="px-3 py-2 hover:bg-stone-100">
+
+                                    +
+
+                                </button>
+
+                            </div>
+
+
+                            <span class="font-bold">
+
+                                ${formatPrice(subtotal)}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }).join("");
+
+        }
+
+
+        /* ========================================================
+           ABRIR CARRITO
+        ========================================================= */
+
+        function openCart() {
+
+            const panel =
+                document.getElementById("cartPanel");
+
+            const overlay =
+                document.getElementById("cartOverlay");
+
+            panel.classList.remove("cart-closed");
+
+            panel.classList.add("cart-open");
+
+            overlay.classList.remove("hidden");
+
+            setTimeout(() => {
+
+                overlay.classList.remove("opacity-0");
+
+            }, 10);
+
+            document.body.style.overflow = "hidden";
+
+        }
+
+
+        /* ========================================================
+           CERRAR CARRITO
+        ========================================================= */
+
+        function closeCart() {
+
+            const panel =
+                document.getElementById("cartPanel");
+
+            const overlay =
+                document.getElementById("cartOverlay");
+
+            panel.classList.remove("cart-open");
+
+            panel.classList.add("cart-closed");
+
+            overlay.classList.add("opacity-0");
+
+            setTimeout(() => {
+
+                overlay.classList.add("hidden");
+
+            }, 300);
+
+            document.body.style.overflow = "";
+
+        }
+
+
+        /* ========================================================
+           MOSTRAR CHECKOUT
+        ========================================================= */
+
+        function showCheckout() {
+
+            if (cart.length === 0) {
+
+                alert("Agrega al menos un producto al carrito.");
+
+                return;
+
+            }
+
+            document.getElementById("checkoutModal")
+                .classList.remove("hidden");
+
+            document.getElementById("checkoutTotal").textContent =
+                formatPrice(getCartTotal());
+
+        }
+
+
+        /* ========================================================
+           CERRAR CHECKOUT
+        ========================================================= */
+
+        function closeCheckout() {
+
+            document.getElementById("checkoutModal")
+                .classList.add("hidden");
+
+        }
+
+
+        /* ========================================================
+           MOSTRAR / OCULTAR DIRECCIÓN
+        ========================================================= */
+
+        function toggleAddress() {
+
+            const deliveryType =
+                document.querySelector(
+                    'input[name="deliveryType"]:checked'
+                )?.value;
+
+            const addressContainer =
+                document.getElementById("addressContainer");
+
+            const address =
+                document.getElementById("customerAddress");
+
+
+            if (deliveryType === "Domicilio") {
+
+                addressContainer.classList.remove("hidden");
+
+                address.required = true;
+
+            } else {
+
+                addressContainer.classList.add("hidden");
+
+                address.required = false;
+
+                address.value = "";
+
+            }
+
+        }
+
+
+        /* ========================================================
+           CONFIRMAR PEDIDO
+        ========================================================= */
+
+        function confirmOrder(event) {
+
+            event.preventDefault();
+
+
+            // Validar carrito
+
+            if (cart.length === 0) {
+
+                alert("Tu carrito está vacío.");
+
+                return;
+
+            }
+
+
+            // Datos del cliente
+
+            const customerName =
+                document.getElementById("customerName")
+                    .value
+                    .trim();
+
+
+            const deliveryType =
+                document.querySelector(
+                    'input[name="deliveryType"]:checked'
+                )?.value;
+
+
+            const address =
+                document.getElementById("customerAddress")
+                    .value
+                    .trim();
+
+
+            // Validación nombre
+
+            if (!customerName) {
+
+                alert("Por favor ingresa tu nombre.");
+
+                return;
+
+            }
+
+
+            // Validación entrega
+
+            if (!deliveryType) {
+
+                alert("Selecciona el tipo de entrega.");
+
+                return;
+
+            }
+
+
+            // Validación dirección
+
+            if (
+                deliveryType === "Domicilio" &&
+                !address
+            ) {
+
+                alert("Por favor ingresa tu dirección.");
+
+                return;
+
+            }
+
+
+            /* ====================================================
+               CONSTRUIR MENSAJE WHATSAPP
+            ==================================================== */
+
+            let message = "";
+
+            message += `*Nuevo Pedido - ${RESTAURANT_NAME}*`;
+            message += `%0A---------------------------------`;
+
+            message += `%0A*Cliente:* ${customerName}`;
+
+            message += `%0A*Entrega:* ${deliveryType}`;
+
+            if (deliveryType === "Domicilio") {
+
+                message += `%0A*Dirección:* ${address}`;
+
+            }
+
+            message += `%0A---------------------------------`;
+
+            message += `%0A*Detalle del Pedido:*`;
+
+
+            // Productos
+
+            cart.forEach(item => {
+
+                const subtotal =
+                    item.price * item.quantity;
+
+                message +=
+                    `%0A- ${item.quantity}x ${item.name} (${formatPrice(subtotal)})`;
+
+            });
+
+
+            // Total
+
+            message += `%0A---------------------------------`;
+
+            message +=
+                `%0A*Total a Pagar:* ${formatPrice(getCartTotal())}`;
+
+
+            /* ====================================================
+               CODIFICAR MENSAJE
+            ==================================================== */
+
+            const encodedMessage =
+                encodeURIComponent(
+                    decodeURIComponent(message)
+                );
+
+
+            /* ====================================================
+               CREAR URL DE WHATSAPP
+            ==================================================== */
+
+            const whatsappUrl =
+                `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+
+
+            /* ====================================================
+               ABRIR WHATSAPP
+            ==================================================== */
+
+            window.open(
+                whatsappUrl,
+                "_blank"
+            );
+
+        }
+
+
+        /* ========================================================
+           INICIALIZAR SISTEMA
+        ========================================================= */
+
+        function init() {
+
+            // Mostrar nombre del restaurante
+
+            document.getElementById(
+                "restaurantNameHeader"
+            ).textContent = RESTAURANT_NAME;
+
+
+            // Renderizar catálogo
+
+            renderCategories();
+
+            renderProducts();
+
+            updateCart();
+
+        }
+
+
+        // Ejecutar sistema
+
+        init();
+
+    </script>
+
+</body>
+</html>
+```
